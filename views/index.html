@@ -123,22 +123,42 @@
     <h1>URL Shortener</h1>
     <form class="url-form" action="api/shorturl" method="POST">
       <input type="text" id="urlInput" class="url-input" placeholder="Enter your long URL" name="url">
-      <button type="submit" class="shorten-button">Shorten</button>
+      <button type="submit" class="shorten-button" onclick="shortenUrl()">Shorten</button>
     </form>
     <div class="shortened-url" id="shortenedUrl">
-     display shortened URL here
+   
     </div>
   </div>
 
-  <script>
-    function shortenUrl() {
-      // You would need to implement the URL shortening logic here using JavaScript and make an API call to the backend server.
-      // For simplicity, this template only displays a placeholder short URL.
-      const longUrl = document.getElementById('urlInput').value;
-      const shortenedUrl = 'http://yourshortenedurl.com/shorturl'; // Replace this with the actual shortened URL
+<script>
+  function shortenUrl() {
+        event.preventDefault();
+        const longUrl = document.getElementById("urlInput").value;
 
-      document.getElementById('shortenedUrl').innerHTML = `<a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a>`;
-    }
+        // Make a POST request to your backend API to generate a shortened URL
+        fetch("/api/shorturl", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: longUrl }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const shortenedUrl = data.short_url; // Assuming the API response has a property 'short_url'
+            document.getElementById(
+              "shortenedUrl"
+            ).innerHTML = `<a href="localhost:3000/api/shorturl/${shortenedUrl}" target="_blank">localhost:3000/api/shorturl/${shortenedUrl}</a>`;
+            console.log("Success:", data);
+          })
+          .catch((error) => {
+            console.error("Error:", JSON.stringify(error));
+            document.getElementById("shortenedUrl").innerText = error.message;
+
+            // Handle error here, e.g., display an error message to the user
+          });
+      }
+    
 
     function toggleTheme() {
       document.body.classList.toggle('dark-mode');
